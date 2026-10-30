@@ -1,4 +1,4 @@
-{
+﻿{
   "id": "pdfcraft",
   "name": "PdfCraft",
   "upgradeCode": "EA00C367-7270-4C50-9D8B-A7A5C88AD27F",
@@ -327,3 +327,4 @@
   ],
   "mode": "dualScope"
 }
+

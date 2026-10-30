@@ -1,7 +1,7 @@
-//! PdfCraft desktop app.
+﻿//! PdfCraft desktop app.
 //!
-//! Usage: `pdfcraft [options] [files…]` (`-h` / `--help` prints a short version of this, [`USAGE`]).
-//! `--create-images [images…]` stages the images in one PDF and asks for the page DPI.
+//! Usage: `pdfcraft [options] [filesâ€¦]` (`-h` / `--help` prints a short version of this, [`USAGE`]).
+//! `--create-images [imagesâ€¦]` stages the images in one PDF and asks for the page DPI.
 //!
 //! View options (applied after the files open; also the seed of the UI control channel):
 //! `--page N  --zoom 150  --layout single|continuous|two-up|two-page  --continuous on|off  --panel comments|bookmarks|pages|fields|layers|attachments|none
@@ -17,7 +17,7 @@
 //! `--control <file>` enables the UI control channel (off by default): the app listens on a random
 //! loopback port and writes `{"port", "token", "pid"}` to `<file>` (owner-only permissions). The
 //! app doesn't start if it can't.
-//! Agents then drive it with `pdfcraft-cli ui --control <file> <method> …`.
+//! Agents then drive it with `pdfcraft-cli ui --control <file> <method> â€¦`.
 
 // Release builds on Windows are GUI-subsystem programs, so launching the app doesn't open a console
 // window next to it (#57). `--version` and diagnostics then go nowhere when started from a terminal
@@ -58,15 +58,15 @@ const APP_ICON_PNG: &[u8] = include_bytes!("../../../assets/app-icon/hicolor/256
 /// What `-h` / `--help` prints (#4076): a hint, not the full option list (that is this file's
 /// doc comment and the README). Scripts want `pdfcraft-cli`, which never opens a window.
 const USAGE: &str = "\
-Usage: pdfcraft [options] [files…]
+Usage: pdfcraft [options] [filesâ€¦]
 
 Opens the files in the PdfCraft desktop app.
 
 Options:
   --new-window                open a window of its own instead of passing the files to a running PdfCraft
-  --create-images [images…]   put the images in one PDF and ask for the page DPI
-  --control <file>            enable the UI control channel (pdfcraft-cli ui --control <file> …)
-  --page N, --zoom 150, --layout continuous, --theme dark, …
+  --create-images [imagesâ€¦]   put the images in one PDF and ask for the page DPI
+  --control <file>            enable the UI control channel (pdfcraft-cli ui --control <file> â€¦)
+  --page N, --zoom 150, --layout continuous, --theme dark, â€¦
                               view settings applied once the files are open
   -h, --help                  print this and exit
   --version                   print the version and exit
@@ -133,11 +133,11 @@ fn migrate_legacy_folders() {
     }
 }
 
-/// Desktop launchers (GNOME Files, KDE Dolphin…) only recognise an app as the default handler for a
+/// Desktop launchers (GNOME Files, KDE Dolphinâ€¦) only recognise an app as the default handler for a
 /// mime type if its `Exec` takes URIs (`%u`/`%U`), not just paths (`%F`); the packaged `.desktop`
 /// file uses `%U` accordingly (packaging/linux/ai.storyteller.pdfcraft.desktop). Decode a local
 /// `file://` argument (`file:///path` or `file://localhost/path`) to a plain path here so the rest
-/// of the app, which only ever opens paths, is unaffected. Other schemes (`http://`, `mailto:`…),
+/// of the app, which only ever opens paths, is unaffected. Other schemes (`http://`, `mailto:`â€¦),
 /// URIs naming another host, and plain paths pass through untouched.
 fn path_from_arg(arg: String) -> String {
     let Some(rest) = arg.strip_prefix("file://") else { return arg };
@@ -201,7 +201,7 @@ fn main() -> eframe::Result {
     }
     // First, so the panic hook and every start-up warning are recorded (`logging`).
     let logger = logging::install();
-    // Last-resort guard (AGENTS.md §4): commands, edits, opens and saves catch panics and report
+    // Last-resort guard (AGENTS.md Â§4): commands, edits, opens and saves catch panics and report
     // them; this hook logs every panic, caught or not, with a backtrace when RUST_BACKTRACE is set.
     std::panic::set_hook(Box::new(|info| {
         let trace = std::backtrace::Backtrace::capture();
@@ -278,8 +278,7 @@ fn main() -> eframe::Result {
     // Set once the app is created, which is after the renderer has started.
     let started = Rc::new(Cell::new(false));
     let first = if choice == RendererChoice::Gl { eframe::Renderer::Glow } else { eframe::Renderer::Wgpu };
-    let result = eframe::run_native(
-        "PdfCraft",
+    let result = eframe::run_native("Zetica PDF",
         native_options(launch.integrated, launch.window_controls.is_some(), first),
         app_creator(
             launch.clone(),
@@ -296,8 +295,7 @@ fn main() -> eframe::Result {
             // Old or unusual GPUs and drivers (#461, #435, #392) can't give wgpu a device; OpenGL
             // usually still works there, so that's better than quitting.
             log::error!("the GPU renderer (wgpu) didn't start: {e}. Starting with OpenGL instead; set PDFCRAFT_RENDERER=gl to skip wgpu.");
-            eframe::run_native(
-                "PdfCraft",
+            eframe::run_native("Zetica PDF",
                 native_options(launch.integrated, launch.window_controls.is_some(), eframe::Renderer::Glow),
                 app_creator(
                     launch,
@@ -340,7 +338,7 @@ fn retry_with_gl(choice: RendererChoice, app_started: bool) -> bool {
 /// The window and renderer settings for one run.
 fn native_options(integrated: bool, app_frame: bool, renderer: eframe::Renderer) -> eframe::NativeOptions {
     let mut viewport = egui::ViewportBuilder::default()
-        .with_title("PdfCraft")
+        .with_title("Zetica PDF")
         .with_inner_size([1440.0, 920.0])
         .with_min_inner_size([820.0, 520.0])
         .with_drag_and_drop(true)
@@ -417,7 +415,7 @@ fn app_creator<'a>(
         app.integrated_titlebar = integrated;
         app.window_controls = window_controls;
         app.system_text_scale = text_scale::system();
-        // Windows' Animation effects setting, which Preferences ▸ Animation effects follows unless
+        // Windows' Animation effects setting, which Preferences â–¸ Animation effects follows unless
         // it is set to On or Off.
         #[cfg(target_os = "windows")]
         {
@@ -429,7 +427,7 @@ fn app_creator<'a>(
         #[cfg(target_os = "macos")]
         {
             app.os_events = Some(apple_events.connect(&cc.egui_ctx));
-            // The native menu bar. Its Quit (⌘Q) closes the window rather than ending the process as
+            // The native menu bar. Its Quit (âŒ˜Q) closes the window rather than ending the process as
             // winit's does (#1136), so `guard_quit` asks about unsaved changes, as for the close
             // button.
             if !app.install_native_menu(&cc.egui_ctx) {
@@ -506,7 +504,7 @@ fn notify_software_renderer(app: &mut PdfCraftApp, device_type: eframe::wgpu::De
 /// opens, so nothing is lost.
 fn open_control_channel(file: &str, endpoint: std::io::Result<pdfcraft_ui_egui::control::Endpoint>) -> Result<(), String> {
     match endpoint.and_then(|ep| write_control_file(file, ep.port, &ep.token).map(|()| ep.port)) {
-        // Never the token (AGENTS.md §3): it stays in the owner-only file.
+        // Never the token (AGENTS.md Â§3): it stays in the owner-only file.
         Ok(port) => {
             log::info!("UI control channel on 127.0.0.1:{port} (connection details in {file})");
             Ok(())
@@ -803,3 +801,4 @@ fn pick_adapter(adapters: &[(u32, u32, eframe::wgpu::DeviceType)], displays: &[D
 
 #[cfg(test)]
 mod tests;
+

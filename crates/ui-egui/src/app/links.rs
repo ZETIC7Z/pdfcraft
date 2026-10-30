@@ -1,4 +1,4 @@
-use super::*;
+﻿use super::*;
 
 impl PdfCraftApp {
     #[cfg(not(target_arch = "wasm32"))]
@@ -123,3 +123,4 @@ impl PdfCraftApp {
         }
     }
 }
+
